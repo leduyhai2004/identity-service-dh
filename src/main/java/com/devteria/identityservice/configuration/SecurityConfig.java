@@ -38,11 +38,13 @@ public class SecurityConfig {
                 //C1 : để phân quyền thì
                 //mặc định jwt authentication manager sẽ map các role thành SCOPE_* để Spring Security có thể sử dụng
                 //.requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS).hasAuthority("SCOPE_ADMIN")
+                //trong jwt thì token sẽ có dạng "scope": "ADMIN USER" (nếu có 2 role là ADMIN và USER)
 
                 //C2 : để phân quyền thì
                 //Ta có thể sử dụng jwtAuthenticationConverter để convert prefix SCOPE_ thành ROLE_
                 //.requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS).hasAuthority("ROLE_ADMIN")
                 // hoặc hasRole("ADMIN") : vì nó sẽ tự động tìm trong các authorities có prefix là ROLE_ADMIN
+                //trong jwt thì token sẽ có dạng "scope": "ADMIN USER" (nếu có 2 role là ADMIN và USER)
 
                 .anyRequest()
                 .authenticated());

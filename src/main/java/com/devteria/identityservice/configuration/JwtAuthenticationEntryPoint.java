@@ -15,6 +15,7 @@ import com.devteria.identityservice.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    //Phương thức này sẽ được gọi khi có lỗi xác thực:
     @Override
     public void commence(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
@@ -35,3 +36,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.flushBuffer();
     }
 }
+
+//Người dùng chưa đăng nhập nhưng cố gắng truy cập tài nguyên yêu cầu xác thực.
+//JWT bị thiếu, sai, hoặc hết hạn.

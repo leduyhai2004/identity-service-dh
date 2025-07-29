@@ -53,6 +53,8 @@ public class AuthenticationService {
     @Value("${jwt.valid-duration}")
     protected long VALID_DURATION;
 
+
+    // thời gian tính từ lúc token được cấp đến khi có thể refresh lại token
     @NonFinal
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
@@ -71,6 +73,8 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
+        log.info("SignerKey: {}", SIGNER_KEY);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository
                 .findByUsername(request.getUsername())
@@ -85,8 +89,11 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
 
+    //chỉ lưu các token đã logout vào bảng invalidated_token
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         try {
+
+            //ngay cả khi token đã quá hạn exp nhưng vẫn còn trong thời gian refreshable.
             var signToken = verifyToken(request.getToken(), true);
 
             String jit = signToken.getJWTClaimsSet().getJWTID();
@@ -114,8 +121,8 @@ public class AuthenticationService {
 
         var username = signedJWT.getJWTClaimsSet().getSubject();
 
-        var user =
-                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+        var user = userRepository.findByUsername(username).
+                orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         var token = generateToken(user);
 
@@ -131,7 +138,7 @@ public class AuthenticationService {
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
-                .jwtID(UUID.randomUUID().toString())
+                .jwtID(UUID.randomUUID().toString()) // lưu id để có thể invalidate token sau này
                 .claim("scope", buildScope(user))
                 .build();
 
@@ -150,7 +157,7 @@ public class AuthenticationService {
 
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
+        //Parse chuỗi token thành đối tượng SignedJWT để có thể trích xuất claim bên trong như exp, iat, jti
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expiryTime = (isRefresh)
@@ -158,12 +165,15 @@ public class AuthenticationService {
                         .getJWTClaimsSet()
                         .getIssueTime()
                         .toInstant()
+                //refresh token : thời gian tính từ lúc token được cấp đến khi có thể refresh lại token
                         .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
                         .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
-
+        //Kiểm tra chữ ký JWT có đúng với SIGNER_KEY không.
         var verified = signedJWT.verify(verifier);
-
+        //expiryTime = 12:30:00
+        //now = 11:15:00
+        //expiryTime.after(now) → true :  Token vẫn còn hợp lệ
         if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
@@ -208,3 +218,22 @@ public class AuthenticationService {
 // giả dụ scope của admin sẽ là "ROLE_ADMIN ROLE_USER CAN_VIEW CAN_EDIT"
 //@PreAuthorize("hasRole('ADMIN')") sẽ tìm trong authorities có prefix là ROLE_
 //@PreAuthorize("hasAuthority('CAN_VIEW')"), @PreAuthorize("hasAuthority('ROLE_ADMIN')") nó sẽ map chính xác authority
+
+
+//Giả sử token có thông tin:
+//issueTime: 10:00
+//expirationTime (exp): 10:20
+//refreshableDuration: 60 phút → thời gian làm mới tối đa: 11:00
+
+//Khi logout lúc 10:45, truyền isRefresh = true:
+//        expiryTime = issueTime + 60 phút = 11:00
+//        👉 So sánh expiryTime.after(now) → 11:00 > 10:45 → ✅ Đúng
+//👉 Nếu chữ ký đúng (verified == true) → vượt qua kiểm tra → không bị lỗi
+//👉 Cho phép lưu jti vào DB → Token được chặn
+
+
+//Nếu bạn truyền isRefresh = false:
+//        expiryTime = exp = 10:20
+//        👉 So sánh 10:20 > 10:45 → ❌ Sai
+//👉 Dù chữ ký đúng → vẫn không vượt qua điều kiện verified && expiryTime.after(...)
+//👉 Token bị ném lỗi UNAUTHENTICATED → Không thể lưu vào DB → Không thể chặn

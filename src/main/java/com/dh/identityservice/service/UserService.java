@@ -3,7 +3,12 @@ package com.dh.identityservice.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.dh.identityservice.dto.PageResponseDTO;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -93,5 +98,25 @@ public class UserService {
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponseDTO<UserResponse> searchUsers(String keyword, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<User> userPage = userRepository.findUsersWithSearch(keyword, pageable);
+
+        List<UserResponse> userResponses = userPage.getContent().stream().map(userMapper::toUserResponse).toList();
+        PageResponseDTO<UserResponse> pageResponseDTO = PageResponseDTO.<UserResponse>builder()
+                .content(userResponses)
+                .pageNo(userPage.getNumber())
+                .pageSize(userPage.getSize())
+                .totalElements(userPage.getTotalElements())
+                .totalPages(userPage.getTotalPages())
+                .build();
+        return pageResponseDTO;
     }
 }

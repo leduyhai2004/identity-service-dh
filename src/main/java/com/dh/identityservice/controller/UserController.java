@@ -2,8 +2,10 @@ package com.dh.identityservice.controller;
 
 import java.util.List;
 
+import com.dh.identityservice.dto.PageResponseDTO;
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +44,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
-        var authentication  = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("User {} is accessing user info for userId: {}", authentication.getName(), userId);
         authentication.getAuthorities().forEach(grantedAuthority
                 -> log.info("Authority: {}", grantedAuthority.getAuthority()));
@@ -70,5 +72,21 @@ public class UserController {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<PageResponseDTO<UserResponse>> searchUsers(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+
+
+        return ApiResponse.<PageResponseDTO<UserResponse>>builder()
+                .result(userService.searchUsers(keyword, pageNo, pageSize, sortBy, sortDir))
+                .build();
+
+
     }
 }

@@ -1,4 +1,3 @@
-ALTER TABLE address
-    ADD COLUMN IF NOT EXISTS city VARCHAR(255) UNIQUE DEFAULT '';
+INSERT INTO permission (name, description) VALUES ('LISTEN', 'LISTEN permission');
 
 

@@ -13,17 +13,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  data:
-    redis:
-      #spring.data.redis.use-redis-cache
-      use-redis-cache: true  # Changed from false to true
-      host: ${REDIS_HOST:localhost} # Default to 'localhost' if not provided
-      #host: ${REDIS_HOST:ubuntu-server-01.local} # Default to 'localhost' if not provided
-      port: ${REDIS_PORT:6379}
-    cache:
-      type: redis
-      redis:
-        time-to-live: 600000 # 10 minutes
+
 
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"

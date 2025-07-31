@@ -102,6 +102,7 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "user_detail", key = "#id")
     public UserResponse getUser(String id) {
+        log.info("get user from database");
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }

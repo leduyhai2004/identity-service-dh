@@ -53,7 +53,7 @@ public class ApplicationInitConfig {
         log.info("Initializing application.....");
         return args -> {
 
-            // if (userRepository.count() == 0 && roleRepository.count() == 0 && permissionRepository.count() == 0) {
+            if (userRepository.count() == 0 && roleRepository.count() == 0 && permissionRepository.count() == 0) {
             // chạy init
             Permission readPermission = Permission.builder()
                     .name("READ")
@@ -124,7 +124,7 @@ public class ApplicationInitConfig {
                 log.info("Created 1000 test users");
                 log.info("Application initialization completed .....");
             }
-            // }
+            }
         };
     }
 }

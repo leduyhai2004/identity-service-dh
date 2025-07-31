@@ -86,28 +86,10 @@ public class UserController {
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) throws JsonProcessingException {
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").ascending());
-        List<UserResponse> userResponse = userRedisService.getAllUsers(keyword, pageRequest);
 
-        PageResponseDTO<UserResponse> pageResponseDTO = new PageResponseDTO<>();
 
-        if (userResponse!=null && !userResponse.isEmpty()) {
-            log.info("Get users from redis");
-             pageResponseDTO = PageResponseDTO.<UserResponse>builder()
-                    .content(userResponse)
-                    .pageNo(pageNo)
-                    .pageSize(pageSize)
-                    .totalElements(userResponse.size())
-                    .totalPages((int) Math.ceil((double) userResponse.size() / pageSize))
-                    .build();
-        }
-        if(userResponse == null){
-            pageResponseDTO = userService.searchUsers(keyword, pageNo, pageSize, sortBy, sortDir);
-            userRedisService.saveAllUsers(pageResponseDTO.getContent(),keyword,pageRequest);
-            log.info("Get users from database");
-        }
         return ApiResponse.<PageResponseDTO<UserResponse>>builder()
-                .result(pageResponseDTO)
+                .result(userService.searchUsers(keyword, pageNo, pageSize, sortBy, sortDir))
                 .build();
     }
 }

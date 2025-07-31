@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.dh.identityservice.dto.PageResponseDTO;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,6 +73,7 @@ public class UserService {
     }
 
     @PostAuthorize("returnObject.username == authentication.name")
+    @CachePut(value = "user_detail", key = "#userId")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -83,6 +87,7 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "user_detail", key = "#userId")
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
@@ -95,13 +100,16 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "user_detail", key = "#id")
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "users", key = "#keyword")
     public PageResponseDTO<UserResponse> searchUsers(String keyword, int pageNo, int pageSize, String sortBy, String sortDir) {
+        log.info("get user from database");
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
 

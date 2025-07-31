@@ -78,17 +78,20 @@ public class ApplicationInitConfig {
                 Role userRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.USER_ROLE)
                         .description("User role")
+                                .permissions(Set.of(readPermission, writePermission,deletePermission))
                         .build());
 
                 roleRepository.save(Role.builder()
                         .name(PredefinedRole.MANAGER_ROLE)
                         .description("Manager role")
+                        .permissions(Set.of(readPermission, writePermission))
                         .build());
 
 
                 Role adminRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.ADMIN_ROLE)
                         .description("Admin role")
+                        .permissions(Set.of(readPermission))
                         .build());
 
 

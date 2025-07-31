@@ -74,6 +74,17 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/filters")
+    public ApiResponse<PageResponseDTO<UserResponse>> getUsersByIds(@RequestParam List<Long> ids,
+                                                         @RequestParam(defaultValue = "0") int pageNo,
+                                                         @RequestParam(defaultValue = "10") int pageSize,
+                                                         @RequestParam(defaultValue = "id") String sortBy,
+                                                         @RequestParam(defaultValue = "asc") String sortDir) {
+        return ApiResponse.<PageResponseDTO<UserResponse>>builder()
+                .result(userService.getUsersByIds(ids, pageNo, pageSize, sortBy, sortDir))
+                .build();
+    }
+
     @GetMapping("/search")
     public ApiResponse<PageResponseDTO<UserResponse>> searchUsers(
             @RequestParam(defaultValue = "") String keyword,

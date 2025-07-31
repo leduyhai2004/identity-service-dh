@@ -1,5 +1,6 @@
 package com.dh.identityservice.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -31,5 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findUsersWithNativeSearch(@Param("keyword") String keyword, Pageable pageable);
 
 
+
+    @Query("SELECT u FROM User u WHERE u.id IN :ids")
+    Page<User> findUsersByIdList(@Param("ids") List<Long> ids, Pageable pageable);
 
 }

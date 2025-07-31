@@ -119,4 +119,24 @@ public class UserService {
                 .build();
         return pageResponseDTO;
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponseDTO<UserResponse> getUsersByIds(List<Long> ids, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<User> userPage = userRepository.findUsersByIdList(ids, pageable);
+
+        List<UserResponse> userResponses = userPage.getContent().stream().map(userMapper::toUserResponse).toList();
+        PageResponseDTO<UserResponse> pageResponseDTO = PageResponseDTO.<UserResponse>builder()
+                .content(userResponses)
+                .pageNo(userPage.getNumber())
+                .pageSize(userPage.getSize())
+                .totalElements(userPage.getTotalElements())
+                .totalPages(userPage.getTotalPages())
+                .build();
+        return pageResponseDTO;
+    }
 }

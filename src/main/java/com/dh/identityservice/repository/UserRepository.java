@@ -24,4 +24,12 @@ public interface UserRepository extends JpaRepository<User, String> {
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<User> findUsersWithSearch(@Param("keyword") String keyword, Pageable pageable);
 
+        @Query(value = """
+        SELECT u FROM user u
+        WHERE u.username LIKE CONCAT('%', :keyword, '%')
+            """, nativeQuery = true)
+    Page<User> findUsersWithNativeSearch(@Param("keyword") String keyword, Pageable pageable);
+
+
+
 }

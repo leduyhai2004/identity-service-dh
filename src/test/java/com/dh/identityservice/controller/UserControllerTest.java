@@ -53,7 +53,7 @@ class UserControllerTest {
                 .build();
 
         userResponse = UserResponse.builder()
-                .id("cf0600f538b3")
+                .id(156443L)
                 .username("john")
                 .firstName("John")
                 .lastName("Doe")
@@ -77,7 +77,7 @@ class UserControllerTest {
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1000))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.id").value("cf0600f538b3"));
+                .andExpect(MockMvcResultMatchers.jsonPath("result.id").value(156443L));
     }
 
     @Test

@@ -1,3 +1,2 @@
-INSERT INTO permission (name, description) VALUES ('LISTEN', 'LISTEN permission');
-
-
+INSERT INTO permission (name, description)
+VALUES ('hello', '%%{default.name}%%')

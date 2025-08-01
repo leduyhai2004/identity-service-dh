@@ -1,2 +1,2 @@
 INSERT INTO permission (name, description)
-VALUES ('hello', '%%{default.name}%%')
+VALUES (@@{default.name}@@, @@{permission.description}@@);

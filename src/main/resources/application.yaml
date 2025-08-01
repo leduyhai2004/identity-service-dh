@@ -11,14 +11,6 @@ spring:
     username: ${DBMS_USERNAME:root}
   flyway:
     locations: classpath:/db/migration,classpath:/dev/db/migration
-    enabled: true
-    out-of-order: true
-    create-schemas: false
-    placeholders:
-      permission.name: "${PERMISSION_NAME:hello22weqw2}"
-      permission.description: "${PERMISSION_DESC:test 23 ti}"
-    placeholder-prefix: "@@{"
-    placeholder-suffix: "}@@"
 
   jpa:
     hibernate:

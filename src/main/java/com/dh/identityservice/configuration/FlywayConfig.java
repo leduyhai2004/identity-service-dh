@@ -2,11 +2,15 @@ package com.dh.identityservice.configuration;
 
 
 import org.flywaydb.core.Flyway;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class FlywayConfig {
@@ -24,7 +28,14 @@ public class FlywayConfig {
 
     @Bean
     public Flyway flyway() {
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("default.name", "'UPLOAD233'");  // Remove extra quotes
+        placeholders.put("permission.name", "'hello22234534'");
+        placeholders.put("permission.description", "'test134534534ti'");
         Flyway flyway = Flyway.configure()
+                .placeholders(placeholders  )
+                .placeholderPrefix("@@{")
+                .placeholderSuffix("}@@")
                 .dataSource(dataSource())
                 .locations(flywayLocations)
                 .baselineOnMigrate(true)//default baseline is V1

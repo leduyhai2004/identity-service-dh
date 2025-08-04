@@ -33,7 +33,7 @@ public class FlywayConfig {
         placeholders.put("permission.name", "'hello22234534'");
         placeholders.put("permission.description", "'test134534534ti'");
         Flyway flyway = Flyway.configure()
-                .placeholders(placeholders  )
+                .placeholders(placeholders)
                 .placeholderPrefix("@@{")
                 .placeholderSuffix("}@@")
                 .dataSource(dataSource())

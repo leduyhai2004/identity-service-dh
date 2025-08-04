@@ -29,6 +29,7 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}") // Read 'spring.data.redis.port' property from application.yml
     private int redisPort;
 
+    //Tạo kết nối đến Redis
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         logger.info(String.format("redisHost = %s, redisPort = %d", redisHost, redisPort));
@@ -51,6 +52,8 @@ public class RedisConfig {
         template.afterPropertiesSet();
         return template;
     }
+
+    //Cấu hình Jackson để xử lý LocalDateTime
     @Bean
     public ObjectMapper redisObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();

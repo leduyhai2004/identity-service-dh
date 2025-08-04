@@ -18,6 +18,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
+// run it first : docker run -d --name redis-dev -p 6379:6379 redis
 @Configuration
 public class RedisConfig {
     private static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);

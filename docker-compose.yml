@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: 272004
+      MYSQL_DATABASE: test_demo
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 272004
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - spring-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p272004"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  springboot-app:
+    build: .
+    container_name: springboot-app-container
+    environment:
+      DBMS_CONNECTION: jdbc:mysql://mysql:3306/test_demo
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 272004
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - spring-network
+    restart: on-failure
+
+volumes:
+  db-data:
+
+networks:
+  spring-network:
+    driver: bridge

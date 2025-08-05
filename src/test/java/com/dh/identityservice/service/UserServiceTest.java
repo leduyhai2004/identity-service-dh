@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.dh.identityservice.repository.RoleRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ public class UserServiceTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     private UserCreationRequest request;
     private UserResponse userResponse;
@@ -70,7 +74,11 @@ public class UserServiceTest {
     void createUser_validRequest_success() {
         // GIVEN
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
+        //set role user to test
+        when(roleRepository.findById(anyString())).thenReturn(Optional.empty());
+
         when(userRepository.save(any())).thenReturn(user);
+
 
         // WHEN
         var response = userService.createUser(request);

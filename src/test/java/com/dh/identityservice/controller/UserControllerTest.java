@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // để gửi request đến dispacher
 
     @MockBean
     private UserService userService;
@@ -62,7 +62,6 @@ class UserControllerTest {
     }
 
     @Test
-    //
     void createUser_validRequest_success() throws Exception {
         // GIVEN
         ObjectMapper objectMapper = new ObjectMapper();
@@ -81,13 +80,15 @@ class UserControllerTest {
     }
 
     @Test
-    //
     void createUser_usernameInvalid_fail() throws Exception {
         // GIVEN
         request.setUsername("joh");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
+
+        //không cần vì nhận lỗi trướ khi xuống controller rồi
+        //Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(userResponse);
 
         // WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders.post("/users")

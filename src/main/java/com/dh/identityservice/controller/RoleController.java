@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.dh.identityservice.dto.request.ApiResponse;
+import com.dh.identityservice.dto.response.ApiResponse;
 import com.dh.identityservice.dto.request.RoleRequest;
 import com.dh.identityservice.dto.response.RoleResponse;
 import com.dh.identityservice.service.RoleService;

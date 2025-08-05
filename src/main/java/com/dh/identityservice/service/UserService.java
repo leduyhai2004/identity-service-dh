@@ -43,20 +43,18 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
-        log.info("User {} : Creating new user in Service");
+        log.info("User : Creating new user in Service");
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
-
         user.setRoles(roles);
+        user = userRepository.save(user);
 
-        try {
-            user = userRepository.save(user);
-        } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
-        }
 
         return userMapper.toUserResponse(user);
     }

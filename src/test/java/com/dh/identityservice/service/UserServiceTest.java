@@ -100,6 +100,7 @@ public class UserServiceTest {
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002);
     }
 
+    //org.springframework.security
     @Test
     @WithMockUser(username = "john")
     void getMyInfo_valid_success() {
@@ -111,6 +112,7 @@ public class UserServiceTest {
         Assertions.assertThat(response.getId()).isEqualTo(156443L);
     }
 
+    //org.springframework.security
     @Test
     @WithMockUser(username = "john")
     void getMyInfo_userNotFound_error() {

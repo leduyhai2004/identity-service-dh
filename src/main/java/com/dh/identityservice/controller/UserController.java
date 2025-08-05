@@ -5,11 +5,10 @@ import java.util.List;
 import com.dh.identityservice.dto.PageResponseDTO;
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import com.dh.identityservice.dto.request.ApiResponse;
+import com.dh.identityservice.dto.response.ApiResponse;
 import com.dh.identityservice.dto.request.UserCreationRequest;
 import com.dh.identityservice.dto.request.UserUpdateRequest;
 import com.dh.identityservice.dto.response.UserResponse;
@@ -30,7 +29,7 @@ public class UserController {
 
     @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
-        log.info("User {} : Creating new user in Controller");
+        log.info("User: Creating new user in Controller");
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
                 .build();

@@ -6,12 +6,22 @@ import java.security.NoSuchAlgorithmException;
 import jakarta.xml.bind.DatatypeConverter;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.docker.compose.DockerComposeAutoConfiguration"
+})
+
 class IdentityServiceApplicationTests {
 
     @Test

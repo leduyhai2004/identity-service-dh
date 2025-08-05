@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import com.dh.identityservice.dto.request.ApiResponse;
+import com.dh.identityservice.dto.response.ApiResponse;
 import com.dh.identityservice.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

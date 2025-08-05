@@ -37,6 +37,7 @@ class UserControllerIntegrationTest {
             .withEnv("MYSQL_ROOT_PASSWORD", "rootpass")
             .withStartupTimeout(Duration.ofMinutes(3))
             .waitingFor(Wait.forLogMessage(".*ready for connections.*", 1));
+    //==>Sau khi chạy dòng này, Testcontainers sẽ dùng Docker để khởi động 1 container MySQL thật trong nền.
 
     @DynamicPropertySource
     static void configureDataSource(DynamicPropertyRegistry registry){
@@ -44,9 +45,11 @@ class UserControllerIntegrationTest {
         registry.add("spring.datasource.username", mySQLContainer::getUsername);
         registry.add("spring.datasource.password", mySQLContainer::getPassword);
         registry.add("spring.datasource.driverClassName", () -> "com.mysql.cj.jdbc.Driver");
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("spring.jpa.show-sql", () -> "true");
     }
+    // ==> Gán cấu hình container vào Spring Boot bằng @DynamicPropertySource
+
 
     @Autowired
     private MockMvc mockMvc;

@@ -87,7 +87,7 @@ class UserControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
 
-        //không cần vì nhận lỗi trướ khi xuống controller rồi
+        //không cần vì nhận lỗi trước khi xuống controller rồi
         //Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(userResponse);
 
         // WHEN, THEN

@@ -1,17 +1,22 @@
 package com.dh.identityservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
+import com.dh.identityservice.dto.request.UserUpdateRequest;
 import com.dh.identityservice.repository.RoleRepository;
 import org.assertj.core.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
+import org.h2.util.MathUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,6 +42,7 @@ public class UserServiceTest {
     private RoleRepository roleRepository;
 
     private UserCreationRequest request;
+    private UserUpdateRequest updateRequest;
     private UserResponse userResponse;
     private User user;
     private LocalDate dob;
@@ -53,6 +59,12 @@ public class UserServiceTest {
                 .dob(dob)
                 .build();
 
+        updateRequest = UserUpdateRequest.builder()
+                .password("1213212")
+                .firstName("Haild")
+                .lastName("Haild")
+                .build();
+
         userResponse = UserResponse.builder()
                 .id(156443L)
                 .username("john")
@@ -63,9 +75,9 @@ public class UserServiceTest {
 
         user = User.builder()
                 .id(156443L)
-                .username("john")
-                .firstName("John")
-                .lastName("Doe")
+                .username("Haild")
+                .firstName("Haild")
+                .lastName("Haild")
                 .dob(dob)
                 .build();
     }
@@ -85,7 +97,7 @@ public class UserServiceTest {
         // THEN
 
         Assertions.assertThat(response.getId()).isEqualTo(156443L);
-        Assertions.assertThat(response.getUsername()).isEqualTo("john");
+        Assertions.assertThat(response.getUsername()).isEqualTo("Haild");
     }
 
     @Test
@@ -95,6 +107,9 @@ public class UserServiceTest {
 
         // WHEN
         var exception = assertThrows(AppException.class, () -> userService.createUser(request));
+
+//        MockedStatic<MathUtils> mockedStatic = Mockito.mockStatic(MathUtils.class);
+//        mockedStatic.when(() -> MathUtils.randomInt(10)).thenReturn(2);
 
         // THEN
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002);
@@ -108,7 +123,7 @@ public class UserServiceTest {
 
         var response = userService.getMyInfo();
 
-        Assertions.assertThat(response.getUsername()).isEqualTo("john");
+        Assertions.assertThat(response.getUsername()).isEqualTo("Haild");
         Assertions.assertThat(response.getId()).isEqualTo(156443L);
     }
 
@@ -123,4 +138,49 @@ public class UserServiceTest {
 
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
+
+    @Test
+    @WithMockUser(username = "Haild")
+    void updateUser_validRequest_success() {
+        // GIVEN
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(roleRepository.findAllById(any())).thenReturn(List.of());
+        when(userRepository.save(any())).thenReturn(user);
+
+        // WHEN
+        when(roleRepository.findAllById(any())).thenReturn(List.of());
+        var response = userService.updateUser(156443L,updateRequest);
+
+        // THEN
+        Assertions.assertThat(response.getId()).isEqualTo(156443L);
+        Assertions.assertThat(response.getUsername()).isEqualTo("Haild");
+
+    }
+
+    @Test
+    void updateUser_userNotFound_fail() {
+        // GIVEN
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // WHEN
+        var exception = assertThrows(AppException.class, () -> userService.updateUser(156443L,updateRequest));
+        // THEN
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
+    }
+
+    @Test
+    void checkPowerMockito(){
+        try (MockedStatic<MathUtils> mockedStatic = Mockito.mockStatic(MathUtils.class)) {
+            mockedStatic.when(() -> MathUtils.randomInt(5)).thenReturn(2);
+
+            int result = MathUtils.randomInt(5);
+            org.junit.jupiter.api.Assertions.assertNotNull(result);
+            org.junit.jupiter.api.Assertions.assertEquals(2,result);
+            Assertions.assertThat(result).isEqualTo(2);
+        }
+
+    }
+
+
+
+
 }

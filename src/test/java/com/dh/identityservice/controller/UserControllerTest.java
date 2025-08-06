@@ -54,7 +54,7 @@ class UserControllerTest {
 
         userResponse = UserResponse.builder()
                 .id(156443L)
-                .username("john")
+                .username("john1")
                 .firstName("John")
                 .lastName("Doe")
                 .dob(dob)
@@ -76,6 +76,7 @@ class UserControllerTest {
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1000))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("john1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("result.id").value(156443L));
     }
 
@@ -99,3 +100,5 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("message").value("Username must be at least 4 characters"));
     }
 }
+
+

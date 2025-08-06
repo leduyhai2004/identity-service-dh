@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@TestPropertySource(properties = {
-        "spring.datasource.url=jdbc:h2:mem:testdb",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.docker.compose.DockerComposeAutoConfiguration"
-})
-
+//@TestPropertySource(properties = {
+//        "spring.datasource.url=jdbc:h2:mem:testdb",
+//        "spring.jpa.hibernate.ddl-auto=create-drop",
+//        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.docker.compose.DockerComposeAutoConfiguration"
+//})
+@TestPropertySource(locations = "classpath:test.properties")
 class IdentityServiceApplicationTests {
 
     @Test

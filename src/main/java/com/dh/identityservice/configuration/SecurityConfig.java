@@ -25,6 +25,10 @@ public class SecurityConfig {
         "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh"
     };
 
+    private final String[] WEB_UI_ENDPOINTS = {
+        "/", "/login", "/register", "/home", "/logout"
+    };
+
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
@@ -34,6 +38,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request
                 -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
                 .permitAll()
+                .requestMatchers(WEB_UI_ENDPOINTS).permitAll() // Allow access to web UI pages
 
                 //C1 : để phân quyền thì
                 //mặc định jwt authentication manager sẽ map các role thành SCOPE_* để Spring Security có thể sử dụng

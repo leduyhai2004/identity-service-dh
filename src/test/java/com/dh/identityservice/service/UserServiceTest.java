@@ -11,7 +11,6 @@ import java.util.Optional;
 import com.dh.identityservice.dto.request.UserUpdateRequest;
 import com.dh.identityservice.repository.RoleRepository;
 import org.assertj.core.api.Assertions;
-import static org.junit.jupiter.api.Assertions.*;
 import org.h2.util.MathUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -166,6 +165,24 @@ public class UserServiceTest {
         // THEN
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
+    @Test
+    @WithMockUser(username = "Haild")
+    void updateUser_notAuthorized_fail(){
+        User otherUser = User.builder()
+                .id(156443L)
+                .username("otherUser")
+                .firstName("otherUser")
+                .lastName("otherUser")
+                .dob(dob)
+                .build();
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(otherUser));
+        when(roleRepository.findAllById(any())).thenReturn(List.of());
+        when(userRepository.save(any())).thenReturn(otherUser);
+        // WHEN & THEN
+        assertThrows(org.springframework.security.access.AccessDeniedException.class,
+                () -> userService.updateUser(999L, updateRequest));
+    }
 
     @Test
     void checkPowerMockito(){
@@ -179,8 +196,4 @@ public class UserServiceTest {
         }
 
     }
-
-
-
-
 }

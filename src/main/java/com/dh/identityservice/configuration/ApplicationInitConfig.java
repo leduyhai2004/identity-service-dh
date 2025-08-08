@@ -53,7 +53,7 @@ public class ApplicationInitConfig {
         log.info("Initializing application.....");
         return args -> {
 
-            if (userRepository.count() == 0 && roleRepository.count() == 0 && permissionRepository.count() == 0) {
+            //if (userRepository.count() == 0 && roleRepository.count() == 0 && permissionRepository.count() == 0) {
             // chạy init
             Permission readPermission = Permission.builder()
                     .name("READ")
@@ -70,31 +70,30 @@ public class ApplicationInitConfig {
                     .description("Delete access")
                     .build();
 
-            permissionRepository.saveAll(List.of(readPermission, writePermission, deletePermission));
-
-
+            // Capture the saved permissions with their assigned IDs
+            List<Permission> savedPermissions = permissionRepository.saveAll(List.of(readPermission, writePermission, deletePermission));
+            Permission savedReadPermission = savedPermissions.get(0);
+            Permission savedWritePermission = savedPermissions.get(1);
+            Permission savedDeletePermission = savedPermissions.get(2);
 
             if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
                 Role userRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.USER_ROLE)
                         .description("User role")
-                                .permissions(Set.of(readPermission, writePermission,deletePermission))
+                        .permissions(Set.of(savedReadPermission))
                         .build());
 
                 roleRepository.save(Role.builder()
                         .name(PredefinedRole.MANAGER_ROLE)
                         .description("Manager role")
-                        .permissions(Set.of(readPermission, writePermission))
+                        .permissions(Set.of(savedReadPermission, savedWritePermission))
                         .build());
-
 
                 Role adminRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.ADMIN_ROLE)
                         .description("Admin role")
-                        .permissions(Set.of(readPermission))
+                        .permissions(Set.of(savedReadPermission, savedWritePermission, savedDeletePermission))
                         .build());
-
-
 
                 var roles = new HashSet<Role>();
                 roles.add(adminRole);
@@ -124,7 +123,7 @@ public class ApplicationInitConfig {
                 log.info("Created 1000 test users");
                 log.info("Application initialization completed .....");
             }
-            }
+            //}
         };
     }
 }

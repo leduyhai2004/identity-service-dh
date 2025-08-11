@@ -203,4 +203,6 @@ public class UserServiceTest {
             // WHEN & THEN
             assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> userService.getUsers());
         }
+
+
 }

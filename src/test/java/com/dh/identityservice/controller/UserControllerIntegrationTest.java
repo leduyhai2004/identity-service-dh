@@ -34,7 +34,7 @@ import java.time.LocalDate;
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+//@Transactional
 @TestPropertySource(locations = "classpath:test.properties")
 class UserControllerIntegrationTest {
 
@@ -70,9 +70,9 @@ class UserControllerIntegrationTest {
         LocalDate dob = LocalDate.of(1990, 1, 1);
 
         request = UserCreationRequest.builder()
-                .username("john3")
-                .firstName("John3")
-                .lastName("Doe3")
+                .username("john4")
+                .firstName("John4")
+                .lastName("Doe4")
                 .password("12345678")
                 .dob(dob)
                 .build();
@@ -91,7 +91,23 @@ class UserControllerIntegrationTest {
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1000))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("john3"));
+                .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("john4"));
+        log.info("result", response.andReturn().getResponse().getContentAsString() );
+    }
+    @Test
+    void createUser_validRequest_fail() throws Exception {
+        // GIVEN
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String content = objectMapper.writeValueAsString(request);
+
+        // WHEN, THEN
+        var response = mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value(1002))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("User existed"));
         log.info("result", response.andReturn().getResponse().getContentAsString() );
     }
 }

@@ -197,10 +197,10 @@ public class UserServiceTest {
 
     }
     //test with role
-//        @Test
-//        @WithMockUser(username = "user", roles = {"USER"}) // Người dùng có role không phù hợp
-//        void getUsers_userWithoutAdminRole_accessDenied() {
-//            // WHEN & THEN
-//            assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> userService.getUsers());
-//        }
+        @Test
+        @WithMockUser(username = "user", roles = {"USER"}) // Người dùng có role không phù hợp
+        void getUsers_userWithoutAdminRole_accessDenied() {
+            // WHEN & THEN
+            assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> userService.getUsers());
+        }
 }
